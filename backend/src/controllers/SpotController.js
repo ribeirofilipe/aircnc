@@ -11,6 +11,7 @@ module.exports = {
   },
 
   async store(req, res) {
+    console.log(req.body);
     const { filename } = req.file;
     const { company, techs, price } = req.body;
     const { user_id } = req.headers;
