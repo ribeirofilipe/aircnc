@@ -1,35 +1,32 @@
-const User = require("../models/User")
-const Spot = require("../models/Spot")
+const User = require("../models/User");
+const Spot = require("../models/Spot");
 
 module.exports = {
-    async index(req, res) {
-        console.log(req.params)
-        const { tech } = req.query
+  async index(req, res) {
+    const { tech } = req.query;
 
-        const spots = await Spot.find({ techs: tech })
+    const spots = await Spot.find({ techs: tech });
 
-        return res.json(spots)
+    return res.json(spots);
+  },
 
-    },
+  async store(req, res) {
+    const { filename } = req.file;
+    const { company, techs, price } = req.body;
+    const { user_id } = req.headers;
 
-    async store(req, res) {
-        const { filename } = req.file
-        const { company, techs, price } = req.body
-        const { user_id } = req.headers
+    const user = await User.findById(user_id);
 
-        const user = await User.findById(user_id)
+    if (!user) return res.status(400).send({ error: "User does not exists" });
 
-        if (!user)
-            return res.status(400).send({ error: 'User does not exists' })
+    const spot = await Spot.create({
+      user: user_id,
+      thumbnail: filename,
+      company,
+      techs: techs.split(",").map(x => x.trim()),
+      price
+    });
 
-        const spot = await Spot.create({
-            user: user_id,
-            thumbnail: filename,
-            company,
-            techs: techs.split(',').map(x => x.trim()),
-            price
-        })
-
-        return res.json(spot)
-    }
-}
+    return res.json(spot);
+  }
+};
